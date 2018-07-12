@@ -1,7 +1,7 @@
 //
-//  MPKitCompanyName.h
+//  MPKitTaplytics.h
 //
-//  Copyright 2016 mParticle, Inc.
+//  Copyright 2018 mParticle, Inc.
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -17,18 +17,28 @@
 //
 
 #import <Foundation/Foundation.h>
+
 #if defined(__has_include) && __has_include(<mParticle_Apple_SDK/mParticle.h>)
 #import <mParticle_Apple_SDK/mParticle.h>
 #else
 #import "mParticle.h"
 #endif
 
-@interface MPKitCompanyName : NSObject <MPKitProtocol>
+#if defined(__has_include) && __has_include(<Taplytics/Taplytics.h>)
+#import <Taplytics/Taplytics.h>
+#else
+#import "Taplytics.h"
+#endif
+
+@interface MPKitTaplytics : NSObject <MPKitProtocol>
 
 @property (nonatomic, strong, nonnull) NSDictionary *configuration;
 @property (nonatomic, strong, nullable) NSDictionary *launchOptions;
 @property (nonatomic, unsafe_unretained, readonly) BOOL started;
 @property (nonatomic, strong, nullable) NSDictionary<NSString *, id> *userAttributes;
 @property (nonatomic, strong, nullable) NSArray<NSDictionary<NSString *, id> *> *userIdentities;
+
++ (NSDictionary * _Nonnull)tlOptions;
++ (void)setTLOptions:(NSDictionary * _Nonnull)options;
 
 @end
