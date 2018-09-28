@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
     s.name             = "mParticle-Taplytics"
-    s.version          = "6.11.0"
+    s.version          = "7.7.0"
     s.summary          = "Taplytics integration for mParticle"
 
     s.description      = <<-DESC
@@ -15,6 +15,6 @@ Pod::Spec.new do |s|
 
     s.ios.deployment_target = "8.0"
     s.ios.source_files      = 'mParticle-Taplytics/*.{h,m,mm}'
-    s.ios.dependency 'mParticle-Apple-SDK/mParticle', '~> 7'
+    s.ios.dependency 'mParticle-Apple-SDK/mParticle', '~> 7.7.0'
     s.ios.dependency 'Taplytics', '~> 2.31'
 end
