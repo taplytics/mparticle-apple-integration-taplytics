@@ -16,5 +16,5 @@ Pod::Spec.new do |s|
     s.ios.deployment_target = "8.0"
     s.ios.source_files      = 'mParticle-Taplytics/*.{h,m,mm}'
     s.ios.dependency 'mParticle-Apple-SDK/mParticle', '~> 7.7.0'
-    s.ios.dependency 'Taplytics', '~> 2.31'
+    s.ios.dependency 'Taplytics', '~> 2.33'
 end
