@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
     s.name             = "mParticle-Taplytics"
-    s.version          = "8.0.1"
+    s.version          = "8.0.2"
     s.summary          = "Taplytics integration for mParticle"
 
     s.description      = <<-DESC
@@ -17,5 +17,12 @@ Pod::Spec.new do |s|
     s.ios.deployment_target = "9.0"
     s.ios.source_files      = 'mParticle-Taplytics/*.{h,m,mm}'
     s.ios.dependency 'mParticle-Apple-SDK/mParticle', '~> 8.0'
-    s.ios.dependency 'Taplytics', '~> 2.33'
+    s.ios.dependency 'Taplytics', '~> 3.0'
+
+    s.ios.pod_target_xcconfig = {
+        'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'arm64'
+    }
+    s.ios.user_target_xcconfig = {
+        'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'arm64'
+    }
 end
