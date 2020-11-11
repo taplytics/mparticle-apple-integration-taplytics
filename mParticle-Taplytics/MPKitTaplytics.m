@@ -170,7 +170,15 @@ static NSString * const SHOW_LAUNCH_IMAGE_TYPE = @"TaplyticsOptionShowLaunchImag
 }
 
 - (void)setUserIdentitiesFromRequest:(FilteredMPIdentityApiRequest *)request {
-    NSDictionary *identities = [request userIdentities];
+    NSString *userId = [request customerId];
+    NSString *email = [request email];
+    NSMutableDictionary *identities = [NSMutableDictionary dictionary];
+    if (userId != nil) {
+        [identities setValue:userId forKey:@"user_id"];
+    }
+    if (email != nil) {
+        [identities setValue:email forKey:@"email"];
+    }
     [Taplytics setUserAttributes:identities];
 }
 
