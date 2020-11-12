@@ -155,6 +155,7 @@ static NSString * const SHOW_LAUNCH_IMAGE_TYPE = @"TaplyticsOptionShowLaunchImag
 }
 
 #pragma mark User attributes and identities
+
 - (MPKitExecStatus *)setUserAttribute:(NSString *)key value:(NSString *)value {
     NSArray *userAttributeKeys = [MPKitTaplytics userAttributeKeys];
     NSString *attrKey = key;
@@ -168,23 +169,32 @@ static NSString * const SHOW_LAUNCH_IMAGE_TYPE = @"TaplyticsOptionShowLaunchImag
     return [self createStatus:MPKitReturnCodeSuccess];
 }
 
-- (MPKitExecStatus *)setUserIdentity:(NSString *)identityString identityType:(MPUserIdentity)identityType {
-    MPKitReturnCode code;
-    switch( identityType ) {
-        case MPUserIdentityCustomerId: {
-            code = [[self setUserAttribute:@"user_id" value:identityString] returnCode];
-            break;
-        }
-        case MPUserIdentityEmail: {
-            code = [[self setUserAttribute:@"email" value:identityString] returnCode];
-            break;
-        }
-        default: {
-            code = MPKitReturnCodeUnavailable;
-            break;
-        }
+- (void)setUserIdentitiesFromRequest:(FilteredMPIdentityApiRequest *)request {
+    NSString *userId = [request customerId];
+    NSString *email = [request email];
+    NSMutableDictionary *identities = [NSMutableDictionary dictionary];
+    if (userId != nil) {
+        [identities setValue:userId forKey:@"user_id"];
     }
-    return [self createStatus:code];
+    if (email != nil) {
+        [identities setValue:email forKey:@"email"];
+    }
+    [Taplytics setUserAttributes:identities];
+}
+
+- (MPKitExecStatus *)onIdentifyComplete:(FilteredMParticleUser *)user request:(FilteredMPIdentityApiRequest *)request {
+    [self setUserIdentitiesFromRequest:request];
+    return [self createStatus:MPKitReturnCodeSuccess];
+}
+
+- (nonnull MPKitExecStatus *)onLoginComplete:(nonnull FilteredMParticleUser *)user request:(nonnull FilteredMPIdentityApiRequest *)request {
+    [self setUserIdentitiesFromRequest:request];
+    return [self createStatus:MPKitReturnCodeSuccess];
+}
+
+- (nonnull MPKitExecStatus *)onLogoutComplete:(FilteredMParticleUser *)user request:(FilteredMPIdentityApiRequest *)request {
+    [Taplytics resetUser:^{}];
+    return [self createStatus:MPKitReturnCodeSuccess];
 }
 
 #pragma mark e-Commerce
