@@ -96,7 +96,7 @@ static NSString * const SHOW_LAUNCH_IMAGE_TYPE = @"TaplyticsOptionShowLaunchImag
             [Taplytics startTaplyticsAPIKey:apiKey options:options];
         }
     });
-    
+
     self->_started = YES;
 
     dispatch_async(dispatch_get_main_queue(), ^{
@@ -202,14 +202,13 @@ static NSString * const SHOW_LAUNCH_IMAGE_TYPE = @"TaplyticsOptionShowLaunchImag
 - (MPKitExecStatus *)routeCommerceEvent:(MPCommerceEvent *)commerceEvent {
     MPKitExecStatus *execStatus = [self createStatus:MPKitReturnCodeSuccess];
 
-    // In this example, this SDK only supports the 'Purchase' commerce event action
     if (commerceEvent.action == MPCommerceEventActionPurchase) {
         MPTransactionAttributes *transaction = commerceEvent.transactionAttributes;
         if (transaction != nil && transaction.revenue != nil && transaction.transactionId != nil) {
             [Taplytics logRevenue:transaction.transactionId revenue:transaction.revenue];
             [execStatus incrementForwardCount];
         }
-    } else { // Other commerce events are expanded and logged as regular events
+    } else {
         NSArray *expandedInstructions = [commerceEvent expandedInstructions];
 
         for (MPCommerceEventInstruction *commerceEventInstruction in expandedInstructions) {
