@@ -98,10 +98,10 @@ static NSString * const SHOW_LAUNCH_IMAGE_TYPE = @"TaplyticsOptionShowLaunchImag
     });
     
     self->_started = YES;
-    
+
     dispatch_async(dispatch_get_main_queue(), ^{
         NSDictionary *userInfo = @{mParticleKitInstanceKey:[[self class] kitCode]};
-        
+
         [[NSNotificationCenter defaultCenter] postNotificationName:mParticleKitDidBecomeActiveNotification
                                                             object:nil
                                                           userInfo:userInfo];
@@ -198,37 +198,51 @@ static NSString * const SHOW_LAUNCH_IMAGE_TYPE = @"TaplyticsOptionShowLaunchImag
 }
 
 #pragma mark e-Commerce
-- (MPKitExecStatus *)logCommerceEvent:(MPCommerceEvent *)commerceEvent {
-    MPKitExecStatus *execStatus = [[MPKitExecStatus alloc] initWithSDKCode:[[self class] kitCode] returnCode:MPKitReturnCodeSuccess forwardCount:0];
-    
+
+- (MPKitExecStatus *)routeCommerceEvent:(MPCommerceEvent *)commerceEvent {
+    MPKitExecStatus *execStatus = [self createStatus:MPKitReturnCodeSuccess];
+
+    // In this example, this SDK only supports the 'Purchase' commerce event action
     if (commerceEvent.action == MPCommerceEventActionPurchase) {
         MPTransactionAttributes *transaction = commerceEvent.transactionAttributes;
         if (transaction != nil && transaction.revenue != nil && transaction.transactionId != nil) {
             [Taplytics logRevenue:transaction.transactionId revenue:transaction.revenue];
             [execStatus incrementForwardCount];
         }
-        
-    } else {
+    } else { // Other commerce events are expanded and logged as regular events
         NSArray *expandedInstructions = [commerceEvent expandedInstructions];
-        
+
         for (MPCommerceEventInstruction *commerceEventInstruction in expandedInstructions) {
-            [self logEvent:commerceEventInstruction.event];
+            [self routeEvent:commerceEventInstruction.event];
             [execStatus incrementForwardCount];
         }
     }
-    
+
     return execStatus;
 }
 
 #pragma mark Events
-- (MPKitExecStatus *)logEvent:(MPEvent *)event {
+- (MPKitExecStatus *)routeEvent:(MPEvent *)event {
     NSString * eventName = event.name;
-    NSDictionary * metaData = event.info;
+    NSDictionary * metaData = event.customAttributes;
     if (metaData != nil) {
         [Taplytics logEvent:eventName value:nil metaData:metaData];
+    } else if (eventName != nil) {
+        [Taplytics logEvent:eventName];
+    } else {
+        return [self createStatus:MPKitReturnCodeFail];
     }
-    
     return [self createStatus:MPKitReturnCodeSuccess];
+}
+
+- (nonnull MPKitExecStatus *)logBaseEvent:(nonnull MPBaseEvent *)event {
+    if ([event isKindOfClass:[MPEvent class]]) {
+        return [self routeEvent:(MPEvent *)event];
+    } else if ([event isKindOfClass:[MPCommerceEvent class]]) {
+        return [self routeCommerceEvent:(MPCommerceEvent *)event];
+    } else {
+        return [self createStatus:MPKitReturnCodeUnavailable];
+    }
 }
 
 - (MPKitExecStatus *)logScreen:(MPEvent *)event {
