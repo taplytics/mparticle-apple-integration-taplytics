@@ -224,10 +224,12 @@ static NSString * const SHOW_LAUNCH_IMAGE_TYPE = @"TaplyticsOptionShowLaunchImag
 - (MPKitExecStatus *)routeEvent:(MPEvent *)event {
     NSString * eventName = event.name;
     NSDictionary * metaData = event.customAttributes;
-    if (metaData != nil) {
-        [Taplytics logEvent:eventName value:nil metaData:metaData];
-    } else if (eventName != nil) {
-        [Taplytics logEvent:eventName];
+    if (eventName != nil) {
+        if (metaData != nil) {
+            [Taplytics logEvent:eventName value:nil metaData:metaData];
+        } else {
+            [Taplytics logEvent:eventName];
+        }
     } else {
         return [self createStatus:MPKitReturnCodeFail];
     }
